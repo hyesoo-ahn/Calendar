@@ -5,6 +5,9 @@ import WeekLists from '../components/Calendar/WeekLists';
 import { useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
+import WeekDay from '../components/Calendar/WeekDay';
+import Modal from "../components/Modal";
+import AddTodo from "../components/Todo/AddTodo";
 
 const Main = () => {
   const [getMoment, setMoment] = useState(moment());
@@ -46,19 +49,50 @@ const Main = () => {
     // ]
   };
 
-  axios
-    .get(
-      'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?serviceKey=DLS874m%2FPm%2B3DZ9GyK5ub9%2F3kH%2BDGkq8%2B1xq0i3RzNBAXFlelppS6cln7c%2F1yRqSQ3pwR1t9xos1klkXGn3zWQ%3D%3D&solYear=2021&solMonth=02'
-    )
-    .then((Response) => {
-      console.log(Response.data);
-    })
-    .catch((Error) => {
-      console.log(Error);
+
+
+  const [addTodoDate, setaddTodoDate] = useState('');
+  const [todos, setTodos] = useState([]);
+
+  const [holiday, setHoliday] = useState([]);
+
+  useEffect(() => {
+    getData();
+  }, [today]);
+
+  const year = today.format('YYYY');
+  const month = today.format('MM');
+
+  const getData = async () => {
+    const result = await axios({
+      url:
+        'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?serviceKey=DLS874m%2FPm%2B3DZ9GyK5ub9%2F3kH%2BDGkq8%2B1xq0i3RzNBAXFlelppS6cln7c%2F1yRqSQ3pwR1t9xos1klkXGn3zWQ%3D%3D',
+
+      method: 'get',
+      params: {
+        solYear: year,
+        solMonth: month,
+        numOfRows: '20',
+      },
     });
+    const data = result.data.response.body.items?.item || [];
+    if(Array.isArray(data)) {
+      setHoliday(data);
+    } else {
+      setHoliday([data]);
+    }
+  };
+
+  console.log('dd', holiday);
+
+  const onClickDay = (item) => {
+    setaddTodoDate(item);
+  }
+
 
   return (
     <CalendarContainer>
+
       <CalendarTop>
         <Calendar>{today.format('YYYY 년 MM 월')}</Calendar>
         <ButtonGroup>
@@ -84,30 +118,22 @@ const Main = () => {
           </NextBtn>
         </ButtonGroup>
       </CalendarTop>
-      <WeekDay>
-        <div>
-          <span>일</span>
-        </div>
-        <div>
-          <span>월</span>
-        </div>
-        <div>
-          <span>화</span>
-        </div>
-        <div>
-          <span>수</span>
-        </div>
-        <div>
-          <span>목</span>
-        </div>
-        <div>
-          <span>금</span>
-        </div>
-        <div>
-          <span>토</span>
-        </div>
-      </WeekDay>
-      <WeekLists data={getCalendarDays()} getMoment={getMoment} />
+      <WeekDay />
+      <WeekLists
+        data={getCalendarDays()}
+        getMoment={getMoment}
+        holiday={holiday}
+        onClickDay={onClickDay}
+        todos={todos}
+      />
+      {
+        addTodoDate &&
+        <Modal onClose={() => setaddTodoDate('')}>
+          <AddTodo setTodos={setTodos} addTodoDate={addTodoDate} onClose={() => setaddTodoDate('')}/>
+        </Modal>
+      }
+
+
     </CalendarContainer>
   );
 };
@@ -162,28 +188,4 @@ const NextBtn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const WeekDay = styled.div`
-  width: 770px;
-  display: flex;
-  justify-content: space-around;
-  text-align: right;
-  border-bottom: 1.5px solid #cdcdd2;
-  div {
-    width: 109px;
-    height: 30px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-right: 10px;
-    font-size: 14px;
-    color: #4e4e62;
-    &:first-child {
-      color: #bbbbbb;
-    }
-    &:last-child {
-      color: #bbbbbb;
-    }
-  }
 `;

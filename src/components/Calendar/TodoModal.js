@@ -3,7 +3,7 @@ import { Modal } from 'antd';
 import styled from 'styled-components';
 import 'antd/dist/antd.css';
 
-const TodoModal = ({ date }) => {
+const TodoModal = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
