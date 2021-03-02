@@ -6,8 +6,8 @@ import { useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
 import WeekDay from '../components/Calendar/WeekDay';
-import Modal from "../components/Modal";
-import AddTodo from "../components/Todo/AddTodo";
+import Modal from '../components/Modal';
+import AddTodo from '../components/Todo/AddTodo';
 
 const Main = () => {
   const [getMoment, setMoment] = useState(moment());
@@ -26,6 +26,7 @@ const Main = () => {
       weeks = [...weeks, week];
     }
     // [6, 7, 8, 9, 10]
+
     return weeks.reduce((acc, week) => {
       let newarr = new Array(7);
       //newarr = [31, 1, 2, 3, 4, 5, 6]
@@ -48,8 +49,6 @@ const Main = () => {
     //10 [0,0,0,0,0,0,0],
     // ]
   };
-
-
 
   const [addTodoDate, setaddTodoDate] = useState('');
   const [todos, setTodos] = useState([]);
@@ -76,23 +75,21 @@ const Main = () => {
       },
     });
     const data = result.data.response.body.items?.item || [];
-    if(Array.isArray(data)) {
+    if (Array.isArray(data)) {
       setHoliday(data);
     } else {
       setHoliday([data]);
     }
   };
 
-  console.log('dd', holiday);
-
   const onClickDay = (item) => {
     setaddTodoDate(item);
-  }
+  };
 
+  console.log(addTodoDate);
 
   return (
     <CalendarContainer>
-
       <CalendarTop>
         <Calendar>{today.format('YYYY 년 MM 월')}</Calendar>
         <ButtonGroup>
@@ -126,14 +123,15 @@ const Main = () => {
         onClickDay={onClickDay}
         todos={todos}
       />
-      {
-        addTodoDate &&
+      {addTodoDate && (
         <Modal onClose={() => setaddTodoDate('')}>
-          <AddTodo setTodos={setTodos} addTodoDate={addTodoDate} onClose={() => setaddTodoDate('')}/>
+          <AddTodo
+            setTodos={setTodos}
+            addTodoDate={addTodoDate}
+            onClose={() => setaddTodoDate('')}
+          />
         </Modal>
-      }
-
-
+      )}
     </CalendarContainer>
   );
 };

@@ -1,7 +1,14 @@
 import React from 'react';
 import DateItem from './DateItem';
 
-const WeekLists = ({ data, getMoment, holiday, onClickDay, todos }) => {
+const WeekLists = ({
+  data,
+  getMoment,
+  holiday,
+  onClickDay,
+  todos,
+  onDelete,
+}) => {
   return (
     <div>
       {data.map((week, idx) => (
